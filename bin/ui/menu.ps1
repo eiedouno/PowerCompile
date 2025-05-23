@@ -139,27 +139,26 @@ $btnMash.Add_Click({
                 Write-Host "[INFO] PS2EXE module installed and imported."
             } catch {
                 Write-Host "Failed to install PS2EXE module: `n$_" -ForegroundColor DarkRed
-                Pause
-                exit
+                
             }
         } else {
             Import-Module PS2EXE -Force
         }
         if ($ExeConsole) {
-            Invoke-PS2EXE -InputFile $($tbOutput.Text) -OutputFile $($tbOutput.Text).exe -NoOutput
+            Invoke-PS2EXE -InputFile $($tbOutput.Text) -OutputFile $($tbOutput.Text).exe
+            Write-Host "[SUCCESS] Executable created: $exe" -ForegroundColor Green
         } else {
             Invoke-PS2EXE -InputFile $($tbOutput.Text) -OutputFile $($tbOutput.Text).exe -NoConsole -NoOutput
+            Write-Host "[SUCCESS] Executable created: $exe" -ForegroundColor Green
         }
-        Write-Host "[SUCCESS] Executable created: $exe" -ForegroundColor Green
-        Pause
-        Exit
-    }
-    if (($tbPath.Text -eq "") -or (-not (Test-Path $tbPath.Text))) {
-        $global:lblStatus.Text = "Invalid folder path!"
     } else {
-        $global:lblStatus.Text = "Compiling $($tbPath.Text)..."
-        .\bin\compile.ps1 -Path $tbPath.Text -Embedpsd1 $chkEmbed.IsChecked -Output "$($tbOutput.Text).ps1" -Exe $Exe -ExeConsole $chkExeConsole.IsChecked
-        $global:lblStatus.Text = "Compiled successfully!"
+        if (($tbPath.Text -eq "") -or (-not (Test-Path $tbPath.Text))) {
+            $global:lblStatus.Text = "Invalid folder path!"
+        } else {
+            $global:lblStatus.Text = "Compiling $($tbPath.Text)..."
+            .\bin\compile.ps1 -Path $tbPath.Text -Embedpsd1 $chkEmbed.IsChecked -Output "$($tbOutput.Text).ps1" -Exe $Exe -ExeConsole $chkExeConsole.IsChecked
+            $global:lblStatus.Text = "Compiled successfully!"
+        }
     }
 })
 
