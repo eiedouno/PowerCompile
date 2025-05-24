@@ -16,6 +16,6 @@ CLI APPS MUST HAVE **SHOW CONSOLE** CHECKED TO RUN CORRECTLY.
 # Windows Defender Flag
 I'm not paying for a cert. I'm just not. Download the ps1 file and convert itself to the exe. Hash it. It's the same thing.
 
-Windows Defender flags it because it is built in powershell and generates a "random" exe (which is the one you compiled).
+Windows Defender flags it because it is built in powershell and generates a "random" exe (which is the one you compiled). If you don't want to mess with it, just get the console version. For some reason, the console version isn't flagged.
 
 ##### Support for auto signing will come later. Needs admin access though.
