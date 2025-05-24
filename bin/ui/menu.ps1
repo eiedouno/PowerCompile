@@ -81,6 +81,25 @@ $chkExe.Margin = "0,10,0,0"
 [System.Windows.Controls.Grid]::SetRow($chkExe, 5)
 $grid.Children.Add($chkExe)
 
+# Start-File Label
+$lblssn = New-Object System.Windows.Controls.TextBlock
+$lblssn.Text = "Path of the execution script (the one that triggers them all):"
+$lblssn.Margin = "5,10,0,0"
+$lblssn.Visibility = "Collapsed"
+[System.Windows.Controls.Grid]::SetRow($lblssn, 6)
+$grid.Children.Add($lblssn)
+
+# Start-File Name
+$tbssn = New-Object System.Windows.Controls.TextBox
+$tbssn.Margin = "0,10,0,0"
+$tbssn.Width = 380
+$tbssn.IsEnabled = $false
+$tbssn.Visibility = "Collapsed"
+$tbssn.ToolTip = "Make sure this file isn't a batch redirect script. (A batch script that starts a powershell file)"
+$tbssn.HorizontalAlignment = "Left"
+[System.Windows.Controls.Grid]::SetRow($tbssn, 7)
+$grid.Children.Add($tbssn)
+
 # Executable Show Console Checkbox
 $chkExeConsole = New-Object System.Windows.Controls.CheckBox
 $chkExeConsole.Content = "Show Console"
@@ -88,7 +107,7 @@ $chkExeConsole.Margin = "0,10,0,0"
 $chkExeConsole.IsEnabled = $false
 $chkExeConsole.Visibility = "Collapsed"
 $chkExeConsole.ToolTip = "Shows console window when running the executable."
-[System.Windows.Controls.Grid]::SetRow($chkExeConsole, 6)
+[System.Windows.Controls.Grid]::SetRow($chkExeConsole, 8)
 $grid.Children.Add($chkExeConsole)
 
 # Executable Single File Checkbox
@@ -97,15 +116,24 @@ $chkExeSingle.Content = "Single File"
 $chkExeSingle.Margin = "0,10,0,0"
 $chkExeSingle.IsEnabled = $false
 $chkExeSingle.Visibility = "Collapsed"
-[System.Windows.Controls.Grid]::SetRow($chkExeSingle, 7)
+$chkExeSingle.ToolTip = "Convert to executable an already-compiled Powershell script."
+[System.Windows.Controls.Grid]::SetRow($chkExeSingle, 9)
 $grid.Children.Add($chkExeSingle)
+
+# Error Checking Checkbox
+$chkerr = New-Object System.Windows.Controls.CheckBox
+$chkerr.Content = "Preform Error Handling"
+$chkerr.Margin = "0,10,0,0"
+$chkerr.ToolTip = "Attempt to fix any errors detected after compiling the project."
+[System.Windows.Controls.Grid]::SetRow($chkerr, 10)
+$grid.Children.Add($chkerr)
 
 # Status Label
 $global:lblStatus = New-Object System.Windows.Controls.TextBlock
 $global:lblStatus.Text = ""
 $global:lblStatus.Margin = "0,10,0,0"
 $global:lblStatus.Foreground = "Gray"
-[System.Windows.Controls.Grid]::SetRow($global:lblStatus, 8)
+[System.Windows.Controls.Grid]::SetRow($global:lblStatus, 11)
 $grid.Children.Add($global:lblStatus)
 
 # Compile Button
@@ -113,7 +141,7 @@ $btnMash = New-Object System.Windows.Controls.Button
 $btnMash.Content = "Compile"
 $btnMash.Height = 40
 $btnMash.Margin = "0,10,0,0"
-[System.Windows.Controls.Grid]::SetRow($btnMash, 9)
+[System.Windows.Controls.Grid]::SetRow($btnMash, 12)
 $grid.Children.Add($btnMash)
 
 # Hook up browse click
@@ -129,6 +157,8 @@ $btnMash.Add_Click({
     $Exe = [bool]$chkExe.IsChecked
     $Embed = [bool]$chkEmbed.IsChecked
     $ExeConsole = [bool]$chkExeConsole.IsChecked
+    $Err = [bool]$chkerr.IsChecked
+    $ssn = $tbssn.Text
     if ($chkExeSingle.IsChecked) {
         Write-Host "[INFO] Compiling to executable: $exe"
         if (-not (Get-Command Invoke-PS2EXE -ErrorAction SilentlyContinue)) {
@@ -156,7 +186,7 @@ $btnMash.Add_Click({
             $global:lblStatus.Text = "Invalid folder path!"
         } else {
             $global:lblStatus.Text = "Compiling $($tbPath.Text)..."
-            .\bin\compile.ps1 -Path $tbPath.Text -Embedpsd1 $chkEmbed.IsChecked -Output "$($tbOutput.Text).ps1" -Exe $Exe -ExeConsole $chkExeConsole.IsChecked
+            .\bin\compile.ps1 -Path $tbPath.Text -Embedpsd1 $Embed -Output "$($tbOutput.Text).ps1" -Exe $Exe -ExeConsole $ExeConsole -Err $Err -SSN $ssn
             $global:lblStatus.Text = "Compiled successfully!"
         }
     }
@@ -172,11 +202,22 @@ $chkExe.Add_Click({
         if ($chkExeSingle.IsChecked) {
             $ps1text.Visibility = "Collapsed"
             $lblOutput.Text = "Name of File to convert to EXE:"
+            $lblFolder.Visibility = "Collapsed"
+            $spFolder.Visibility = "Collapsed"
+        } else {
+            $lblssn.Visibility = "Visible"
+            $tbssn.Visibility = "Visible"
+            $tbssn.IsEnabled = $true
         }
     } else {
+        $lblssn.Visibility = "Collapsed"
+        $tbssn.Visibility = "Collapsed"
+        $tbssn.IsEnabled = $false
         $chkExeConsole.Visibility = "Collapsed"
         $chkExeSingle.Visibility = "Collapsed"
         $ps1text.Visibility = "Visible"
+        $lblFolder.Visibility = "Visible"
+        $spFolder.Visibility = "Visible"
         $lblOutput.Text = "Output File:"
         $chkExeConsole.IsEnabled = $false
         $chkExeSingle.IsEnabled = $false
@@ -185,10 +226,22 @@ $chkExe.Add_Click({
 
 $chkExeSingle.Add_Click({
     if ($chkExeSingle.IsChecked) {
+        $lblssn.Visibility = "Collapsed"
+        $tbssn.Visibility = "Collapsed"
+        $tbssn.IsEnabled = $false
         $ps1text.Visibility = "Collapsed"
         $lblOutput.Text = "Name of File to convert to EXE:"
+        $lblFolder.Visibility = "Collapsed"
+        $spFolder.Visibility = "Collapsed"
+        $chkerr.Visibility = "Collapsed"
     } else {
+        $lblssn.Visibility = "Visible"
+        $tbssn.Visibility = "Visible"
+        $tbssn.IsEnabled = $true
         $ps1text.Visibility = "Visible"
+        $lblFolder.Visibility = "Visible"
+        $spFolder.Visibility = "Visible"
+        $chkerr.Visibility = "Visible"
         $lblOutput.Text = "Output File:"
     }
 })
