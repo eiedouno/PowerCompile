@@ -3,7 +3,7 @@
  
 # Create Window
 $window = New-Object System.Windows.Window
-$window.Title = "PowerCompile v1.6"
+$window.Title = "PowerCompile v1.7"
 $window.Width = 500
 $window.Height = 400
 $window.WindowStartupLocation = "CenterScreen"
