@@ -5,7 +5,7 @@ Param(
     [bool]$Exe = $false,
     [bool]$ExeConsole = $false,
     [bool]$Err = $true,
-    [string]$SSN = ""
+    [string]$SSN = "{STARTING_SCRIPT_NAME}"
 )
 # Helper: Sanitize file path to valid function name
 function Convert-PathToFunctionName {

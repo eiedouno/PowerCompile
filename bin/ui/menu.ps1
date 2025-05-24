@@ -84,14 +84,14 @@ $grid.Children.Add($chkExe)
 # Start-File Label
 $lblssn = New-Object System.Windows.Controls.TextBlock
 $lblssn.Text = "Path of the execution script (the one that triggers them all):"
-$lblssn.Margin = "5,10,0,0"
+$lblssn.Margin = "15,10,0,0"
 $lblssn.Visibility = "Collapsed"
 [System.Windows.Controls.Grid]::SetRow($lblssn, 6)
 $grid.Children.Add($lblssn)
 
 # Start-File Name
 $tbssn = New-Object System.Windows.Controls.TextBox
-$tbssn.Margin = "0,10,0,0"
+$tbssn.Margin = "10,10,0,0"
 $tbssn.Width = 380
 $tbssn.IsEnabled = $false
 $tbssn.Visibility = "Collapsed"
@@ -103,7 +103,7 @@ $grid.Children.Add($tbssn)
 # Executable Show Console Checkbox
 $chkExeConsole = New-Object System.Windows.Controls.CheckBox
 $chkExeConsole.Content = "Show Console"
-$chkExeConsole.Margin = "0,10,0,0"
+$chkExeConsole.Margin = "10,10,0,0"
 $chkExeConsole.IsEnabled = $false
 $chkExeConsole.Visibility = "Collapsed"
 $chkExeConsole.ToolTip = "Shows console window when running the executable."
@@ -113,7 +113,7 @@ $grid.Children.Add($chkExeConsole)
 # Executable Single File Checkbox
 $chkExeSingle = New-Object System.Windows.Controls.CheckBox
 $chkExeSingle.Content = "Single File"
-$chkExeSingle.Margin = "0,10,0,0"
+$chkExeSingle.Margin = "10,10,0,0"
 $chkExeSingle.IsEnabled = $false
 $chkExeSingle.Visibility = "Collapsed"
 $chkExeSingle.ToolTip = "Convert to executable an already-compiled Powershell script."
@@ -161,14 +161,18 @@ $btnMash.Add_Click({
     $ssn = $tbssn.Text
     if ($chkExeSingle.IsChecked) {
         Write-Host "[INFO] Compiling to executable: $exe"
+        $global:lblStatus.Text = "[INFO] Compiling to executable: $exe"
         if (-not (Get-Command Invoke-PS2EXE -ErrorAction SilentlyContinue)) {
             Write-Host "[INFO] PS2EXE not found. Downloading module..."
+            $global:lblStatus.Text = "[INFO] PS2EXE not found. Downloading module..."
             try {
                 Install-Module -Name PS2EXE -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
                 Import-Module PS2EXE -Force
                 Write-Host "[INFO] PS2EXE module installed and imported."
+                $global:lblStatus.Text = "[INFO] PS2EXE module installed and imported."
             } catch {
-                Write-Host "Failed to install PS2EXE module: `n$_" -ForegroundColor DarkRed
+                Write-Host "[ERROR] Failed to install PS2EXE module: `n$_" -ForegroundColor DarkRed
+                $global:lblStatus.Text = "[ERROR] Failed to install PS2EXE module: `n$_"
                 
             }
         } else {
@@ -177,9 +181,11 @@ $btnMash.Add_Click({
         if ($ExeConsole) {
             Invoke-PS2EXE -InputFile $($tbOutput.Text) -OutputFile $($tbOutput.Text).exe
             Write-Host "[SUCCESS] Executable created: $exe" -ForegroundColor Green
+            $global:lblStatus.Text = "[SUCCESS] Executable created: $exe"
         } else {
             Invoke-PS2EXE -InputFile $($tbOutput.Text) -OutputFile $($tbOutput.Text).exe -NoConsole -NoOutput
             Write-Host "[SUCCESS] Executable created: $exe" -ForegroundColor Green
+            $global:lblStatus.Text = "[SUCCESS] Executable created: $exe"
         }
     } else {
         if (($tbPath.Text -eq "") -or (-not (Test-Path $tbPath.Text))) {
