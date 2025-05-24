@@ -30,6 +30,9 @@ function Get-ProjectFiles {
     $files = foreach ($pattern in $fileTypes) {
         Get-ChildItem -Path $BasePath -Recurse -Filter $pattern -File | Sort-Object FullName
     }
+    foreach ($tefile in $files) {
+        Write-Host "[INFO] Found $tefile" -ForegroundColor "Blue"
+    }
     return $files
 }
 

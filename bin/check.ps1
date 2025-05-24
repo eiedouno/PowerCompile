@@ -25,8 +25,9 @@ Start-Sleep -Milliseconds 400
 Start-Sleep -Milliseconds 400
 (Get-Content $Path) -replace '^\s+@echo.*$', "" | Set-Content $Path
 Start-Sleep -Milliseconds 400
-$matchLine = Get-Content $Path | Where-Object { $_ -match '^Add-Type\s+-AssemblyName.*$' }
+$matchLine = Get-Content $Path | Where-Object { $_ -match '^\s+Add-Type\s+-AssemblyName.*$' } | Select-Object -Unique
 Start-Sleep -Milliseconds 400
-$rest = Get-Content $Path | Where-Object { $_ -notmatch '^.*$Add-Type\s+-AssemblyName.*$' }
+$rest = Get-Content $Path | Where-Object { $_ -notmatch '^\s+Add-Type\s+-AssemblyName.*$' }
 Start-Sleep -Milliseconds 400
 Set-Content $Path -Value @($matchLine, $rest)
+Start-Sleep -Milliseconds 400
