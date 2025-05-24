@@ -27,6 +27,6 @@ Start-Sleep -Milliseconds 400
 Start-Sleep -Milliseconds 400
 $matchLine = Get-Content $Path | Where-Object { $_ -match '^Add-Type\s+-AssemblyName.*$' }
 Start-Sleep -Milliseconds 400
-$rest = Get-Content $Path | Where-Object { $_ -notmatch '^Add-Type\s+-AssemblyName.*$' }
+$rest = Get-Content $Path | Where-Object { $_ -notmatch '^.*$Add-Type\s+-AssemblyName.*$' }
 Start-Sleep -Milliseconds 400
 Set-Content $Path -Value @($matchLine, $rest)
