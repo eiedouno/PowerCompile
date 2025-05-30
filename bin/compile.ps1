@@ -8,9 +8,10 @@ Param(
     [string]$SFN
 )
 
-if ($SFN -eq "") {
+if ([string]::IsNullOrWhiteSpace($SFN)) {
     $SFN = "{STARTING_SCRIPT_NAME}"
 }
+
 # Helper: Sanitize file path to valid function name
 function Convert-PathToFunctionName {
     param(
@@ -107,21 +108,21 @@ if ($Err -eq "True") {
     Write-Host "[INFO] Preformed Error Handling on $Output"
 }
 
-$SSN = $SSN.Replace(".\\", "")
-$SSN = $SSN.Replace("\\", "")
-$SSN = $SSN.Replace(".\", "")
-$SSN = $SSN.Replace(".//", "")
-$SSN = $SSN.Replace("//", "")
-$SSN = $SSN.Replace("./", "")
-$SSN = $SSN.Replace(".cmd", "")
-$SSN = $SSN.Replace(".bat", "")
-$SSN = $SSN.Replace(".ps1", "")
-$SSN = $SSN.Replace(".psm1", "")
-$SSN = $SSN.Replace("/", "-")
-$SSN = $SSN.Replace("\", "-")
-$SSN = if ($SSN.StartsWith('-')) { $SSN.Substring(1) } else { $SSN }
+$SFN = $SFN.Replace(".\\", "")
+$SFN = $SFN.Replace("\\", "")
+$SFN = $SFN.Replace(".\", "")
+$SFN = $SFN.Replace(".//", "")
+$SFN = $SFN.Replace("//", "")
+$SFN = $SFN.Replace("./", "")
+$SFN = $SFN.Replace(".cmd", "")
+$SFN = $SFN.Replace(".bat", "")
+$SFN = $SFN.Replace(".ps1", "")
+$SFN = $SFN.Replace(".psm1", "")
+$SFN = $SFN.Replace("/", "-")
+$SFN = $SFN.Replace("\", "-")
+$SFN = if ($SFN.StartsWith('-')) { $SFN.Substring(1) } else { $SFN }
 Add-Content -Path $Output -Value "`n# Starting Function:"
-Add-Content -Path $Output -Value "`nfn-$SSN"
+Add-Content -Path $Output -Value "`nfn-$SFN"
 
 if ($exe -eq "True") {
     Write-Host "[INFO] Compiling to executable: $exe"
