@@ -5,8 +5,12 @@ Param(
     [bool]$Exe = $false,
     [bool]$ExeConsole = $false,
     [bool]$Err = $true,
-    [string]$SSN = "{STARTING_SCRIPT_NAME}"
+    [string]$SFN
 )
+
+if ($SFN -eq "") {
+    $SFN = "{STARTING_SCRIPT_NAME}"
+}
 # Helper: Sanitize file path to valid function name
 function Convert-PathToFunctionName {
     param(
@@ -16,9 +20,12 @@ function Convert-PathToFunctionName {
     # Compute relative path and remove extension
     $relative = $FullPath.Substring($BasePath.Length).TrimStart('\','/')
     $name = [IO.Path]::ChangeExtension($relative, $null)
-    # Replace invalid chars with hyphens, lowercase, then trim trailing hyphens
-    $clean = ($name -replace '[\\/:\.\s]', '-').ToLower().TrimEnd('-')
-    return "fn-$clean"
+    if ($Err) {
+        $clean = ($name -replace '[\\/:\.\s]', '-').ToLower().TrimEnd('-')
+        return "fn-$clean"
+    } else {
+        return "fn-$name"
+    }
 }
 
 # Scan and order project files
@@ -90,12 +97,6 @@ foreach ($file in $allFiles) {
     $out += ""  # Blank line
 }
 
-# Append entry point invocation if specified
-if ($EntryPointFunction) {
-    $out += "# Invocation";
-    $out += "$EntryPointFunction";
-}
-
 Write-Host "[INFO] Writing bundled script to $Output"
 $out | Set-Content -LiteralPath $Output -Encoding UTF8
 Write-Host "[SUCCESS] Bundle complete. Output: $Output" -ForegroundColor Green
@@ -119,8 +120,8 @@ $SSN = $SSN.Replace(".psm1", "")
 $SSN = $SSN.Replace("/", "-")
 $SSN = $SSN.Replace("\", "-")
 $SSN = if ($SSN.StartsWith('-')) { $SSN.Substring(1) } else { $SSN }
-Set-Content $Output (Get-Content $Output), "`nfn-$SSN";
-
+Add-Content -Path $Output -Value "`n# Starting Function:"
+Add-Content -Path $Output -Value "`nfn-$SSN"
 
 if ($exe -eq "True") {
     Write-Host "[INFO] Compiling to executable: $exe"
