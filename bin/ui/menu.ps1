@@ -82,23 +82,23 @@ $chkExe.Margin = "0,10,0,0"
 $grid.Children.Add($chkExe)
 
 # Start-File Label
-$lblssn = New-Object System.Windows.Controls.TextBlock
-$lblssn.Text = "Path of the execution script (the one that triggers them all):"
-$lblssn.Margin = "15,10,0,0"
-$lblssn.Visibility = "Collapsed"
-[System.Windows.Controls.Grid]::SetRow($lblssn, 6)
-$grid.Children.Add($lblssn)
+$lblsfn = New-Object System.Windows.Controls.TextBlock
+$lblsfn.Text = "Path of the execution script (the one that triggers them all):"
+$lblsfn.Margin = "15,10,0,0"
+$lblsfn.Visibility = "Collapsed"
+[System.Windows.Controls.Grid]::SetRow($lblsfn, 6)
+$grid.Children.Add($lblsfn)
 
 # Start-File Name
-$tbssn = New-Object System.Windows.Controls.TextBox
-$tbssn.Margin = "10,10,0,0"
-$tbssn.Width = 380
-$tbssn.IsEnabled = $false
-$tbssn.Visibility = "Collapsed"
-$tbssn.ToolTip = "Make sure this file isn't a batch redirect script. (A batch script that starts a powershell file)"
-$tbssn.HorizontalAlignment = "Left"
-[System.Windows.Controls.Grid]::SetRow($tbssn, 7)
-$grid.Children.Add($tbssn)
+$tbsfn = New-Object System.Windows.Controls.TextBox
+$tbsfn.Margin = "10,10,0,0"
+$tbsfn.Width = 380
+$tbsfn.IsEnabled = $false
+$tbsfn.Visibility = "Collapsed"
+$tbsfn.ToolTip = "Make sure this file isn't a batch redirect script. (A batch script that starts a powershell file)"
+$tbsfn.HorizontalAlignment = "Left"
+[System.Windows.Controls.Grid]::SetRow($tbsfn, 7)
+$grid.Children.Add($tbsfn)
 
 # Executable Show Console Checkbox
 $chkExeConsole = New-Object System.Windows.Controls.CheckBox
@@ -158,13 +158,13 @@ $btnMash.Add_Click({
     $Embed = [bool]$chkEmbed.IsChecked
     $ExeConsole = [bool]$chkExeConsole.IsChecked
     $Err = [bool]$chkerr.IsChecked
-    $ssn = $tbssn.Text
+    $sfn = $tbsfn.Text
     if ($chkExeSingle.IsChecked) {
         Write-Host "[INFO] Compiling to executable: $exe"
         $global:lblStatus.Text = "[INFO] Compiling to executable: $exe"
         if (-not (Get-Command Invoke-PS2EXE -ErrorAction SilentlyContinue)) {
-            Write-Host "[INFO] PS2EXE not found. Downloading module..."
-            $global:lblStatus.Text = "[INFO] PS2EXE not found. Downloading module..."
+            Write-Host "[WARNING] PS2EXE not found. Downloading module..." -ForegroundColor Yellow
+            $global:lblStatus.Text = "[WARNING] PS2EXE not found. Downloading module..."
             try {
                 Install-Module -Name PS2EXE -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
                 Import-Module PS2EXE -Force
@@ -173,7 +173,6 @@ $btnMash.Add_Click({
             } catch {
                 Write-Host "[ERROR] Failed to install PS2EXE module: `n$_" -ForegroundColor DarkRed
                 $global:lblStatus.Text = "[ERROR] Failed to install PS2EXE module: `n$_"
-                
             }
         } else {
             Import-Module PS2EXE -Force
@@ -192,7 +191,7 @@ $btnMash.Add_Click({
             $global:lblStatus.Text = "Invalid folder path!"
         } else {
             $global:lblStatus.Text = "Compiling $($tbPath.Text)..."
-            .\bin\compile.ps1 -Path $tbPath.Text -Embedpsd1 $Embed -Output "$($tbOutput.Text).ps1" -Exe $Exe -ExeConsole $ExeConsole -Err $Err -SSN $ssn
+            .\bin\compile.ps1 -Path $tbPath.Text -Embedpsd1 $Embed -Output "$($tbOutput.Text).ps1" -Exe $Exe -ExeConsole $ExeConsole -Err $Err -SFN $sfn
             $global:lblStatus.Text = "Compiled successfully!"
         }
     }
@@ -211,14 +210,14 @@ $chkExe.Add_Click({
             $lblFolder.Visibility = "Collapsed"
             $spFolder.Visibility = "Collapsed"
         } else {
-            $lblssn.Visibility = "Visible"
-            $tbssn.Visibility = "Visible"
-            $tbssn.IsEnabled = $true
+            $lblsfn.Visibility = "Visible"
+            $tbsfn.Visibility = "Visible"
+            $tbsfn.IsEnabled = $true
         }
     } else {
-        $lblssn.Visibility = "Collapsed"
-        $tbssn.Visibility = "Collapsed"
-        $tbssn.IsEnabled = $false
+        $lblsfn.Visibility = "Collapsed"
+        $tbsfn.Visibility = "Collapsed"
+        $tbsfn.IsEnabled = $false
         $chkExeConsole.Visibility = "Collapsed"
         $chkExeSingle.Visibility = "Collapsed"
         $ps1text.Visibility = "Visible"
@@ -232,18 +231,18 @@ $chkExe.Add_Click({
 
 $chkExeSingle.Add_Click({
     if ($chkExeSingle.IsChecked) {
-        $lblssn.Visibility = "Collapsed"
-        $tbssn.Visibility = "Collapsed"
-        $tbssn.IsEnabled = $false
+        $lblsfn.Visibility = "Collapsed"
+        $tbsfn.Visibility = "Collapsed"
+        $tbsfn.IsEnabled = $false
         $ps1text.Visibility = "Collapsed"
         $lblOutput.Text = "Name of File to convert to EXE:"
         $lblFolder.Visibility = "Collapsed"
         $spFolder.Visibility = "Collapsed"
         $chkerr.Visibility = "Collapsed"
     } else {
-        $lblssn.Visibility = "Visible"
-        $tbssn.Visibility = "Visible"
-        $tbssn.IsEnabled = $true
+        $lblsfn.Visibility = "Visible"
+        $tbsfn.Visibility = "Visible"
+        $tbsfn.IsEnabled = $true
         $ps1text.Visibility = "Visible"
         $lblFolder.Visibility = "Visible"
         $spFolder.Visibility = "Visible"
